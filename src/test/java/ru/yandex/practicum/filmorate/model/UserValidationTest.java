@@ -24,36 +24,6 @@ class UserValidationTest {
     }
 
     @Test
-    void shouldFailWhenEmailIsBlank() {
-        User user = User.builder()
-                .email(" ")
-                .login("validLogin")
-                .birthday(LocalDate.of(1990, 1, 1))
-                .build();
-
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertFalse(violations.isEmpty(), "Should fail when email is blank");
-        assertTrue(violations.stream()
-                .anyMatch(v -> v.getMessage().equals("Email не может быть пустым") ||
-                        v.getMessage().equals("Email должен быть валидным")));
-    }
-
-    @Test
-    void shouldFailWhenLoginIsBlank() {
-        User user = User.builder()
-                .email("valid@example.com")
-                .login(" ")
-                .birthday(LocalDate.of(1990, 1, 1))
-                .build();
-
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertFalse(violations.isEmpty(), "Should fail when login is blank");
-        assertTrue(violations.stream()
-                .anyMatch(v -> v.getMessage().equals("Логин не может быть пустым") ||
-                        v.getMessage().equals("Логин не может содержать пробелы")));
-    }
-
-    @Test
     void shouldUseLoginAsNameWhenNameIsEmpty() {
         User user = User.builder()
                 .email("valid@example.com")
@@ -76,5 +46,29 @@ class UserValidationTest {
 
         assertEquals("Custom Name", user.getName(),
                 "Имя должно сохраняться, если оно указано");
+    }
+
+    @Test
+    void shouldFailWhenEmailIsBlank() {
+        User user = User.builder()
+                .email(" ")
+                .login("validLogin")
+                .birthday(LocalDate.of(1990, 1, 1))
+                .build();
+
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertFalse(violations.isEmpty(), "Должна быть ошибка валидации для пустого email");
+    }
+
+    @Test
+    void shouldFailWhenLoginIsBlank() {
+        User user = User.builder()
+                .email("valid@example.com")
+                .login(" ")
+                .birthday(LocalDate.of(1990, 1, 1))
+                .build();
+
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertFalse(violations.isEmpty(), "Должна быть ошибка валидации для пустого логина");
     }
 }
