@@ -15,9 +15,10 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmValidationTest {
+
     private Validator validator;
+
     private static final LocalDate MIN_RELEASE_DATE = LocalDate.of(1895, 12, 28);
-    private static final LocalDate FUTURE_DATE = LocalDate.now().plusYears(1);
 
     @BeforeEach
     void setUp() {

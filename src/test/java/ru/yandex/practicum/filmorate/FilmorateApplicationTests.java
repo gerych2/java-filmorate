@@ -22,8 +22,9 @@ class FilmorateApplicationTests {
 
 	@BeforeAll
 	static void setupValidator() {
-		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-		validator = factory.getValidator();
+		try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+			validator = factory.getValidator();
+		}
 	}
 
 	@Test
@@ -31,51 +32,124 @@ class FilmorateApplicationTests {
 		// Стандартный тест Spring Boot
 	}
 
-	// Тест валидации для Film
+	// Film validation tests
 	@Test
 	void whenFilmNameIsBlank_thenValidationFails() {
-		Film film = new Film();
-		film.setName("  "); // пустое имя
-		film.setDescription("Описание");
-		film.setReleaseDate(LocalDate.of(2000, 1, 1));
-		film.setDuration(120);
+		Film film = Film.builder()
+				.name("   ")
+				.description("Valid description")
+				.releaseDate(LocalDate.of(2000, 1, 1))
+				.duration(120)
+				.build();
 
 		Set<ConstraintViolation<Film>> violations = validator.validate(film);
-		assertFalse(violations.isEmpty(), "Имя фильма не может быть пустым");
+		assertFalse(violations.isEmpty(), "Should fail because name is blank");
+		assertTrue(violations.stream()
+						.anyMatch(v -> v.getMessage().equals("Название не может быть пустым")),
+				"Should have correct validation message");
+	}
+
+	@Test
+	void whenFilmDescriptionTooLong_thenValidationFails() {
+		String longDescription = "a".repeat(201);
+		Film film = Film.builder()
+				.name("Valid Name")
+				.description(longDescription)
+				.releaseDate(LocalDate.of(2000, 1, 1))
+				.duration(120)
+				.build();
+
+		Set<ConstraintViolation<Film>> violations = validator.validate(film);
+		assertFalse(violations.isEmpty(), "Should fail because description is too long");
+		assertTrue(violations.stream()
+						.anyMatch(v -> v.getMessage().equals("Описание не может превышать 200 символов")),
+				"Should have correct validation message");
 	}
 
 	@Test
 	void whenFilmDurationNegative_thenValidationFails() {
-		Film film = new Film();
-		film.setName("Valid Name");
-		film.setDescription("Описание");
-		film.setReleaseDate(LocalDate.of(2000, 1, 1));
-		film.setDuration(-5);
+		Film film = Film.builder()
+				.name("Valid Name")
+				.description("Valid description")
+				.releaseDate(LocalDate.of(2000, 1, 1))
+				.duration(-5)
+				.build();
 
 		Set<ConstraintViolation<Film>> violations = validator.validate(film);
-		assertFalse(violations.isEmpty(), "Продолжительность должна быть положительной");
+		assertFalse(violations.isEmpty(), "Should fail because duration is negative");
+		assertTrue(violations.stream()
+						.anyMatch(v -> v.getMessage().equals("Продолжительность должна быть положительной")),
+				"Should have correct validation message");
 	}
 
-	// Тест валидации для User
+	// User validation tests
 	@Test
 	void whenUserEmailInvalid_thenValidationFails() {
-		User user = new User();
-		user.setEmail("invalid-email");
-		user.setLogin("userlogin");
-		user.setBirthday(LocalDate.of(1990, 1, 1));
+		User user = User.builder()
+				.email("invalid-email")
+				.login("validlogin")
+				.birthday(LocalDate.of(1990, 1, 1))
+				.build();
 
 		Set<ConstraintViolation<User>> violations = validator.validate(user);
-		assertFalse(violations.isEmpty(), "Email должен быть валидным");
+		assertFalse(violations.isEmpty(), "Should fail because email is invalid");
+		assertTrue(violations.stream()
+						.anyMatch(v -> v.getMessage().equals("Email должен быть валидным")),
+				"Should have correct validation message");
 	}
 
 	@Test
 	void whenUserLoginContainsSpaces_thenValidationFails() {
-		User user = new User();
-		user.setEmail("test@example.com");
-		user.setLogin("user login");
-		user.setBirthday(LocalDate.of(1990, 1, 1));
+		User user = User.builder()
+				.email("valid@example.com")
+				.login("user login")
+				.birthday(LocalDate.of(1990, 1, 1))
+				.build();
 
 		Set<ConstraintViolation<User>> violations = validator.validate(user);
-		assertFalse(violations.isEmpty(), "Логин не должен содержать пробелы");
+		assertFalse(violations.isEmpty(), "Should fail because login contains spaces");
+		assertTrue(violations.stream()
+						.anyMatch(v -> v.getMessage().equals("Логин не может содержать пробелы")),
+				"Should have correct validation message");
+	}
+
+	@Test
+	void whenUserBirthdayInFuture_thenValidationFails() {
+		User user = User.builder()
+				.email("valid@example.com")
+				.login("validlogin")
+				.birthday(LocalDate.now().plusDays(1))
+				.build();
+
+		Set<ConstraintViolation<User>> violations = validator.validate(user);
+		assertFalse(violations.isEmpty(), "Should fail because birthday is in future");
+		assertTrue(violations.stream()
+						.anyMatch(v -> v.getMessage().equals("Дата рождения не может быть в будущем")),
+				"Should have correct validation message");
+	}
+
+	@Test
+	void whenValidFilm_thenNoValidationErrors() {
+		Film film = Film.builder()
+				.name("Valid Film")
+				.description("Valid description")
+				.releaseDate(LocalDate.of(2000, 1, 1))
+				.duration(120)
+				.build();
+
+		Set<ConstraintViolation<Film>> violations = validator.validate(film);
+		assertTrue(violations.isEmpty(), "Valid film should pass validation");
+	}
+
+	@Test
+	void whenValidUser_thenNoValidationErrors() {
+		User user = User.builder()
+				.email("valid@example.com")
+				.login("validlogin")
+				.birthday(LocalDate.of(1990, 1, 1))
+				.build();
+
+		Set<ConstraintViolation<User>> violations = validator.validate(user);
+		assertTrue(violations.isEmpty(), "Valid user should pass validation");
 	}
 }

@@ -8,6 +8,7 @@ import java.time.LocalDate;
 @Data
 @Builder
 public class Film {
+
     private int id;
 
     @NotBlank(message = "Название не может быть пустым")

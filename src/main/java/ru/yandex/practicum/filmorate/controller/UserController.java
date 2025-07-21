@@ -12,7 +12,9 @@ import java.util.*;
 @RequestMapping("/users")
 @Slf4j
 public class UserController {
+
     private final Map<Integer, User> users = new HashMap<>();
+
     private int idCounter = 1;
 
     @GetMapping

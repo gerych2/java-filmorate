@@ -15,7 +15,9 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserValidationTest {
+
     private Validator validator;
+
     private static final LocalDate FUTURE_DATE = LocalDate.now().plusYears(1);
 
     @BeforeEach

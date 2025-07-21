@@ -8,6 +8,7 @@ import java.time.LocalDate;
 @Data
 @Builder
 public class User {
+
     private int id;
 
     @NotBlank(message = "Email не может быть пустым")
