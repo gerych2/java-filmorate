@@ -1,76 +1,127 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.*;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 import java.time.LocalDate;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UserValidationTest {
+class UserValidationTest {
     private Validator validator;
+    private static final LocalDate FUTURE_DATE = LocalDate.now().plusYears(1);
 
     @BeforeEach
-    public void setup() {
+    void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
 
-    @Test
-    public void testValidUser() {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("userlogin");
-        user.setName("Test Name");
-        user.setBirthday(LocalDate.of(1990, 1, 1));
-
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertTrue(violations.isEmpty());
+    private User createValidUser() {
+        return User.builder()
+                .email("valid@example.com")
+                .login("validLogin")
+                .birthday(LocalDate.of(2000, 1, 1))
+                .build();
     }
 
     @Test
-    public void testInvalidEmail() {
-        User user = new User();
+    @DisplayName("Должен создать валидного пользователя")
+    void shouldCreateValidUser() {
+        User user = createValidUser();
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertTrue(violations.isEmpty(), "Валидный пользователь не должен иметь нарушений");
+    }
+
+    @Test
+    @DisplayName("Не должен пропускать пустой email")
+    void shouldFailWhenEmailIsBlank() {
+        User user = createValidUser();
+        user.setEmail(" ");
+
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+
+        assertFalse(violations.isEmpty(), "Пустой email должен вызывать ошибку");
+        assertEquals(1, violations.size());
+        assertEquals("Email не может быть пустым", violations.iterator().next().getMessage());
+    }
+
+    @Test
+    @DisplayName("Не должен пропускать некорректный email")
+    void shouldFailWhenEmailIsInvalid() {
+        User user = createValidUser();
         user.setEmail("invalid-email");
-        user.setLogin("login");
-        user.setBirthday(LocalDate.of(1990, 1, 1));
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertFalse(violations.isEmpty());
+
+        assertFalse(violations.isEmpty(), "Некорректный email должен вызывать ошибку");
+        assertEquals(1, violations.size());
+        assertEquals("Email должен быть валидным", violations.iterator().next().getMessage());
     }
 
     @Test
-    public void testLoginWithSpaces() {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("user login");
-        user.setBirthday(LocalDate.of(1990, 1, 1));
+    @DisplayName("Не должен пропускать пустой логин")
+    void shouldFailWhenLoginIsBlank() {
+        User user = createValidUser();
+        user.setLogin(" ");
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertFalse(violations.isEmpty());
+
+        assertFalse(violations.isEmpty(), "Пустой логин должен вызывать ошибку");
+        assertEquals(1, violations.size());
+        assertEquals("Логин не может быть пустым", violations.iterator().next().getMessage());
     }
 
     @Test
-    public void testEmptyLogin() {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("  ");
-        user.setBirthday(LocalDate.of(1990, 1, 1));
+    @DisplayName("Не должен пропускать логин с пробелами")
+    void shouldFailWhenLoginContainsSpaces() {
+        User user = createValidUser();
+        user.setLogin("login with spaces");
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertFalse(violations.isEmpty());
+
+        assertFalse(violations.isEmpty(), "Логин с пробелами должен вызывать ошибку");
+        assertEquals(1, violations.size());
+        assertEquals("Логин не может содержать пробелы", violations.iterator().next().getMessage());
     }
 
     @Test
-    public void testFutureBirthday() {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("login");
-        user.setBirthday(LocalDate.now().plusDays(1));
+    @DisplayName("Должен подставлять логин как имя, если имя не указано")
+    void shouldUseLoginAsNameWhenNameIsEmpty() {
+        User user = createValidUser();
+        user.setName(null);
+
+        assertEquals(user.getLogin(), user.getName(), "Имя должно быть равно логину, если имя не указано");
+    }
+
+    @Test
+    @DisplayName("Не должен пропускать дату рождения в будущем")
+    void shouldFailWhenBirthdayIsInFuture() {
+        User user = createValidUser();
+        user.setBirthday(FUTURE_DATE);
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertFalse(violations.isEmpty());
+
+        assertFalse(violations.isEmpty(), "Дата рождения в будущем должна вызывать ошибку");
+        assertEquals(1, violations.size());
+        assertEquals("Дата рождения не может быть в будущем", violations.iterator().next().getMessage());
+    }
+
+    @Test
+    @DisplayName("Должен принимать пустое имя")
+    void shouldAcceptEmptyName() {
+        User user = createValidUser();
+        user.setName("");
+
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+
+        assertTrue(violations.isEmpty(), "Пустое имя должно быть допустимым");
     }
 }
