@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -15,7 +14,6 @@ public class UserService {
 
     private final UserStorage userStorage;
 
-    @Autowired
     public UserService(UserStorage userStorage) {
         this.userStorage = userStorage;
     }
@@ -37,8 +35,8 @@ public class UserService {
     public List<User> getFriends(int userId) {
         User user = getUserById(userId);
         return user.getFriends().stream()
-                .map(id -> userStorage.getById(id).orElseThrow(
-                        () -> new ValidationException("Друг с ID " + id + " не найден")))
+                .map(id -> userStorage.getById(id)
+                        .orElseThrow(() -> new ValidationException("Друг с ID " + id + " не найден")))
                 .collect(Collectors.toList());
     }
 
@@ -47,8 +45,8 @@ public class UserService {
         Set<Integer> friends2 = getUserById(otherId).getFriends();
         return friends1.stream()
                 .filter(friends2::contains)
-                .map(id -> userStorage.getById(id).orElseThrow(
-                        () -> new ValidationException("Друг с ID " + id + " не найден")))
+                .map(id -> userStorage.getById(id)
+                        .orElseThrow(() -> new ValidationException("Друг с ID " + id + " не найден")))
                 .collect(Collectors.toList());
     }
 

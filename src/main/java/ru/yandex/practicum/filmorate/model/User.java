@@ -1,8 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
-import jakarta.validation.constraints.*;
+
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,21 +30,15 @@ public class User {
     @Builder.Default
     private Set<Integer> friends = new HashSet<>();
 
-    // Кастомный билдер
-    @Builder
-    public User(int id,
-                String email,
-                String login,
-                String name,
-                LocalDate birthday,
-                Set<Integer> friends) {
+    public void setName(String name) {
+        this.name = (name == null || name.isBlank()) ? this.login : name;
+    }
 
+    public User(int id, String email, String login, String name, LocalDate birthday) {
         this.id = id;
         this.email = email;
         this.login = login;
-        // Если имя пустое, используем логин
-        this.name = (name == null || name.isBlank()) ? login : name;
+        this.setName(name);
         this.birthday = birthday;
-        this.friends = (friends == null) ? new HashSet<>() : friends;
     }
 }
