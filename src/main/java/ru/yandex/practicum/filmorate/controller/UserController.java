@@ -17,6 +17,7 @@ import java.util.List;
 public class UserController {
 
     private final UserStorage userStorage;
+
     private final UserService userService;
 
     @Autowired

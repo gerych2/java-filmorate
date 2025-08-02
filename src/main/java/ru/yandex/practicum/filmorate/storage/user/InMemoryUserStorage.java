@@ -10,6 +10,7 @@ import java.util.*;
 public class InMemoryUserStorage implements UserStorage {
 
     private final Map<Integer, User> users = new HashMap<>();
+
     private int idCounter = 1;
 
     @Override
