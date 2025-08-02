@@ -34,11 +34,18 @@ public class User {
         this.name = (name == null || name.isBlank()) ? this.login : name;
     }
 
+    // Конструктор с 5 параметрами (старый)
     public User(int id, String email, String login, String name, LocalDate birthday) {
         this.id = id;
         this.email = email;
         this.login = login;
         this.setName(name);
         this.birthday = birthday;
+    }
+
+    // Новый конструктор с 6 параметрами
+    public User(int id, String email, String login, String name, LocalDate birthday, Set<Integer> friends) {
+        this(id, email, login, name, birthday);
+        this.friends = friends != null ? friends : new HashSet<>();
     }
 }
