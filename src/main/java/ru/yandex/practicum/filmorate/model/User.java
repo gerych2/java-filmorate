@@ -29,8 +29,21 @@ public class User {
     @Builder.Default
     private Set<Integer> friends = new HashSet<>();
 
-    // Только сеттер для имени, конструктор убираем
-    public void setName(String name) {
-        this.name = (name == null || name.isBlank()) ? this.login : name;
+    // Кастомный билдер
+    @Builder
+    public User(int id,
+                String email,
+                String login,
+                String name,
+                LocalDate birthday,
+                Set<Integer> friends) {
+
+        this.id = id;
+        this.email = email;
+        this.login = login;
+        // Если имя пустое, используем логин
+        this.name = (name == null || name.isBlank()) ? login : name;
+        this.birthday = birthday;
+        this.friends = (friends == null) ? new HashSet<>() : friends;
     }
 }
