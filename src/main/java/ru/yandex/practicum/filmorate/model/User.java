@@ -26,19 +26,11 @@ public class User {
     @PastOrPresent(message = "Дата рождения не может быть в будущем")
     private LocalDate birthday;
 
-    // ВОТ ЭТОГО ПОЛЯ У ТЕБЯ НЕ БЫЛО
     @Builder.Default
     private Set<Integer> friends = new HashSet<>();
 
+    // Только сеттер для имени, конструктор убираем
     public void setName(String name) {
         this.name = (name == null || name.isBlank()) ? this.login : name;
-    }
-
-    public User(int id, String email, String login, String name, LocalDate birthday) {
-        this.id = id;
-        this.email = email;
-        this.login = login;
-        this.setName(name);
-        this.birthday = birthday;
     }
 }
