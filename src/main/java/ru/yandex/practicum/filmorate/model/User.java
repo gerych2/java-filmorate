@@ -1,9 +1,12 @@
 package ru.yandex.practicum.filmorate.model;
 
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
-import jakarta.validation.constraints.*;
+
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
@@ -24,15 +27,25 @@ public class User {
     @PastOrPresent(message = "Дата рождения не может быть в будущем")
     private LocalDate birthday;
 
+    @Builder.Default
+    private Set<Integer> friends = new HashSet<>();
+
     public void setName(String name) {
         this.name = (name == null || name.isBlank()) ? this.login : name;
     }
 
+    // Конструктор с 5 параметрами (старый)
     public User(int id, String email, String login, String name, LocalDate birthday) {
         this.id = id;
         this.email = email;
         this.login = login;
-        this.setName(name); // Используем наш сеттер
+        this.setName(name);
         this.birthday = birthday;
+    }
+
+    // Новый конструктор с 6 параметрами
+    public User(int id, String email, String login, String name, LocalDate birthday, Set<Integer> friends) {
+        this(id, email, login, name, birthday);
+        this.friends = friends != null ? friends : new HashSet<>();
     }
 }
