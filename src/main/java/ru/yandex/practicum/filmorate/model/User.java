@@ -3,6 +3,8 @@ package ru.yandex.practicum.filmorate.model;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -10,6 +12,8 @@ import java.util.Set;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     private int id;
@@ -30,22 +34,8 @@ public class User {
     @Builder.Default
     private Set<Integer> friends = new HashSet<>();
 
+    // Логика замены пустого имени логином
     public void setName(String name) {
         this.name = (name == null || name.isBlank()) ? this.login : name;
-    }
-
-    // Конструктор с 5 параметрами (старый)
-    public User(int id, String email, String login, String name, LocalDate birthday) {
-        this.id = id;
-        this.email = email;
-        this.login = login;
-        this.setName(name);
-        this.birthday = birthday;
-    }
-
-    // Новый конструктор с 6 параметрами
-    public User(int id, String email, String login, String name, LocalDate birthday, Set<Integer> friends) {
-        this(id, email, login, name, birthday);
-        this.friends = friends != null ? friends : new HashSet<>();
     }
 }

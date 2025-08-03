@@ -19,7 +19,12 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User add(User user) {
         user.setId(generateId());
-        user.setName(user.getName()); // выставить login если name пустой
+
+        // Если имя пустое — подставляем логин
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+
         users.put(user.getId(), user);
         return user;
     }
@@ -29,7 +34,11 @@ public class InMemoryUserStorage implements UserStorage {
         if (!users.containsKey(user.getId())) {
             throw new NoSuchElementException("Пользователь с ID " + user.getId() + " не найден");
         }
-        user.setName(user.getName());
+
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+
         users.put(user.getId(), user);
         return user;
     }
