@@ -33,20 +33,29 @@ public class ErrorHandler {
         return error;
     }
 
+    // Для поиска друзей (по тестам: 400 при неизвестном пользователе)
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleUserNotFound(UserNotFoundException e) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", e.getMessage());
+        return error;
+    }
+
+    // Для фильмов и лайков (по тестам: 404 при неизвестном фильме)
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFound(NoSuchElementException e) {
         Map<String, String> error = new HashMap<>();
-        error.put("error", "Объект не найден");
+        error.put("error", e.getMessage());
         return error;
     }
 
-
-    // Ловим все остальные исключения, чтобы они не падали 500 без ответа
+    // Ловим все остальные исключения
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleAll(Exception e) {
-        e.printStackTrace(); // лог ошибки в консоль
+        e.printStackTrace();
         Map<String, String> error = new HashMap<>();
         error.put("error", "Ошибка сервера");
         return error;
