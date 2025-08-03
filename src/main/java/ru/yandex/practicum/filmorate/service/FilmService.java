@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,14 +20,14 @@ public class FilmService {
 
     public Film addLike(int filmId, int userId) {
         Film film = filmStorage.getById(filmId)
-                .orElseThrow(() -> new ValidationException("Фильм не найден"));
+                .orElseThrow(() -> new NoSuchElementException("Фильм не найден"));
         film.getLikes().add(userId);
         return film;
     }
 
     public Film removeLike(int filmId, int userId) {
         Film film = filmStorage.getById(filmId)
-                .orElseThrow(() -> new ValidationException("Фильм не найден"));
+                .orElseThrow(() -> new NoSuchElementException("Фильм не найден"));
         film.getLikes().remove(userId);
         return film;
     }

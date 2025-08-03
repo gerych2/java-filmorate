@@ -34,12 +34,13 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFound(NoSuchElementException e) {
         Map<String, String> error = new HashMap<>();
-        error.put("error", "Пользователь не найден");
+        error.put("error", "Объект не найден");
         return error;
     }
+
 
     // Ловим все остальные исключения, чтобы они не падали 500 без ответа
     @ExceptionHandler(Exception.class)
