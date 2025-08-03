@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.List;
 
@@ -12,28 +11,25 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
 
-    private final FilmStorage filmStorage;
-
     private final FilmService filmService;
 
-    public FilmController(FilmStorage filmStorage, FilmService filmService) {
-        this.filmStorage = filmStorage;
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
 
     @PostMapping
     public Film add(@Valid @RequestBody Film film) {
-        return filmStorage.add(film);
+        return filmService.addFilm(film);
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
-        return filmStorage.update(film);
+        return filmService.updateFilm(film);
     }
 
     @GetMapping
     public List<Film> getAll() {
-        return filmStorage.getAll();
+        return filmService.getPopularFilms(Integer.MAX_VALUE);
     }
 
     @PutMapping("/{id}/like/{userId}")

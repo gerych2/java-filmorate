@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -20,10 +22,26 @@ public class FilmService {
         this.userStorage = userStorage;
     }
 
+    private void validateReleaseDate(Film film) {
+        LocalDate cinemaBirth = LocalDate.of(1895, 12, 28);
+        if (film.getReleaseDate() != null && film.getReleaseDate().isBefore(cinemaBirth)) {
+            throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895 года");
+        }
+    }
+
+    public Film addFilm(Film film) {
+        validateReleaseDate(film);
+        return filmStorage.add(film);
+    }
+
+    public Film updateFilm(Film film) {
+        validateReleaseDate(film);
+        return filmStorage.update(film);
+    }
+
     public Film addLike(int filmId, int userId) {
         Film film = filmStorage.getById(filmId)
                 .orElseThrow(() -> new NoSuchElementException("Фильм не найден"));
-        // проверяем, что пользователь существует
         userStorage.getById(userId)
                 .orElseThrow(() -> new NoSuchElementException("Пользователь не найден"));
         film.getLikes().add(userId);
@@ -33,7 +51,6 @@ public class FilmService {
     public Film removeLike(int filmId, int userId) {
         Film film = filmStorage.getById(filmId)
                 .orElseThrow(() -> new NoSuchElementException("Фильм не найден"));
-        // проверяем, что пользователь существует
         userStorage.getById(userId)
                 .orElseThrow(() -> new NoSuchElementException("Пользователь не найден"));
         film.getLikes().remove(userId);

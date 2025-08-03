@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -36,7 +36,7 @@ public class UserService {
         User user = getUserById(userId);
         return user.getFriends().stream()
                 .map(id -> userStorage.getById(id)
-                        .orElseThrow(() -> new UserNotFoundException("Пользователь не найден")))
+                        .orElseThrow(() -> new ValidationException("Пользователь не найден")))
                 .collect(Collectors.toList());
     }
 
@@ -46,12 +46,12 @@ public class UserService {
         return friends1.stream()
                 .filter(friends2::contains)
                 .map(id -> userStorage.getById(id)
-                        .orElseThrow(() -> new UserNotFoundException("Пользователь не найден")))
+                        .orElseThrow(() -> new ValidationException("Пользователь не найден")))
                 .collect(Collectors.toList());
     }
 
     private User getUserById(int id) {
         return userStorage.getById(id)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new ValidationException("Пользователь не найден"));
     }
 }

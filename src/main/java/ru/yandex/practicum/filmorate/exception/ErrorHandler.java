@@ -13,7 +13,7 @@ import java.util.NoSuchElementException;
 @RestControllerAdvice
 public class ErrorHandler {
 
-    // Ошибки валидации (аннотации @Valid, @Email, @NotBlank и т.п.)
+    // Ошибки валидации (@Valid, @Email, @NotBlank и т.д.)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationException(MethodArgumentNotValidException e) {
@@ -24,7 +24,7 @@ public class ErrorHandler {
         return errors;
     }
 
-    // Своя проверка и кастомные ошибки
+    // Ошибки проверки логики (например, при поиске друга)
     @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleCustomValidation(ValidationException e) {
@@ -33,16 +33,7 @@ public class ErrorHandler {
         return error;
     }
 
-    // Для поиска друзей (по тестам: 400 при неизвестном пользователе)
-    @ExceptionHandler(UserNotFoundException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleUserNotFound(UserNotFoundException e) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", e.getMessage());
-        return error;
-    }
-
-    // Для фильмов и лайков (по тестам: 404 при неизвестном фильме)
+    // Для фильмов и лайков (по тестам: 404 при неизвестном фильме или пользователе в лайках)
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFound(NoSuchElementException e) {
