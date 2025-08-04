@@ -9,8 +9,8 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
 @RequiredArgsConstructor
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
@@ -28,12 +28,12 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getAll() {
+    public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public User getById(@PathVariable int id) {
+    public User getUser(@PathVariable int id) {
         return userService.getUserById(id);
     }
 

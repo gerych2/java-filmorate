@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
@@ -11,11 +10,11 @@ public class InMemoryUserStorage implements UserStorage {
 
     private final Map<Integer, User> users = new HashMap<>();
 
-    private int nextId = 1;
+    private int currentId = 1;
 
     @Override
     public User add(User user) {
-        user.setId(nextId++);
+        user.setId(currentId++);
         users.put(user.getId(), user);
         return user;
     }
@@ -23,7 +22,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User update(User user) {
         if (!users.containsKey(user.getId())) {
-            throw new ValidationException("Пользователь с id " + user.getId() + " не найден.");
+            throw new NoSuchElementException("Пользователь с id " + user.getId() + " не найден.");
         }
         users.put(user.getId(), user);
         return user;
