@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.Builder;
+import ru.yandex.practicum.filmorate.validation.ReleaseDateConstraint;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ public class Film {
     private String description;
 
     @NotNull(message = "Дата релиза не может быть пустой")
+    @ReleaseDateConstraint
     private LocalDate releaseDate;
 
     @Positive(message = "Продолжительность должна быть положительной")
