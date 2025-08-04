@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -18,8 +19,12 @@ public class FilmService {
     private final UserStorage userStorage;
 
     public Film addFilm(Film film) {
+        if (film.getReleaseDate() == null) {
+            throw new ValidationException("Дата релиза не может быть пустой");
+        }
         return filmStorage.add(film);
     }
+
 
     public Film updateFilm(Film film) {
         return filmStorage.update(film);

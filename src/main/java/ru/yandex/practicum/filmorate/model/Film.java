@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -21,7 +20,6 @@ public class Film {
     @Size(max = 200, message = "Описание не может превышать 200 символов")
     private String description;
 
-    @JsonProperty(required = true)
     @NotNull(message = "Дата релиза не может быть пустой")
     private LocalDate releaseDate;
 
