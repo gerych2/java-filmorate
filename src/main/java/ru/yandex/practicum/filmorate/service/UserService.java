@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -10,12 +11,26 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserStorage userStorage;
 
-    public UserService(UserStorage userStorage) {
-        this.userStorage = userStorage;
+    public User createUser(User user) {
+        return userStorage.add(user);
+    }
+
+    public User updateUser(User user) {
+        return userStorage.update(user);
+    }
+
+    public List<User> getAllUsers() {
+        return userStorage.getAll();
+    }
+
+    public User getUserById(int id) {
+        return userStorage.getById(id)
+                .orElseThrow(() -> new ValidationException("Пользователь с id " + id + " не найден."));
     }
 
     public void addFriend(int userId, int friendId) {
@@ -33,25 +48,19 @@ public class UserService {
     }
 
     public List<User> getFriends(int userId) {
-        User user = getUserById(userId);
-        return user.getFriends().stream()
-                .map(id -> userStorage.getById(id)
-                        .orElseThrow(() -> new ValidationException("Пользователь не найден")))
+        Set<Integer> friendIds = getUserById(userId).getFriends();
+        return friendIds.stream()
+                .map(this::getUserById)
                 .collect(Collectors.toList());
     }
 
     public List<User> getCommonFriends(int userId, int otherId) {
-        Set<Integer> friends1 = getUserById(userId).getFriends();
-        Set<Integer> friends2 = getUserById(otherId).getFriends();
-        return friends1.stream()
-                .filter(friends2::contains)
-                .map(id -> userStorage.getById(id)
-                        .orElseThrow(() -> new ValidationException("Пользователь не найден")))
-                .collect(Collectors.toList());
-    }
+        Set<Integer> userFriends = getUserById(userId).getFriends();
+        Set<Integer> otherFriends = getUserById(otherId).getFriends();
 
-    private User getUserById(int id) {
-        return userStorage.getById(id)
-                .orElseThrow(() -> new ValidationException("Пользователь не найден"));
+        return userFriends.stream()
+                .filter(otherFriends::contains)
+                .map(this::getUserById)
+                .collect(Collectors.toList());
     }
 }
