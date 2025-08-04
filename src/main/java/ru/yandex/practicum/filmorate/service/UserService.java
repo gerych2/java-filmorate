@@ -16,10 +16,12 @@ public class UserService {
     private final UserStorage userStorage;
 
     public User createUser(User user) {
+        user.fillNameIfEmpty();
         return userStorage.add(user);
     }
 
     public User updateUser(User user) {
+        user.fillNameIfEmpty();
         return userStorage.update(user);
     }
 
