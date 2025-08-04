@@ -2,12 +2,14 @@ package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.Builder;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Builder
 public class User {
     private int id;
 
@@ -25,6 +27,7 @@ public class User {
     @Past(message = "Дата рождения должна быть в прошлом")
     private LocalDate birthday;
 
+    @Builder.Default
     private Set<Integer> friends = new HashSet<>();
 
     public void fillNameIfEmpty() {
