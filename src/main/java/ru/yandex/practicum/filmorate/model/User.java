@@ -1,14 +1,17 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Builder;
-import lombok.Data;
 import jakarta.validation.constraints.*;
+import lombok.*;
+
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class User {
-
     private int id;
 
     @NotBlank(message = "Email не может быть пустым")
@@ -16,23 +19,21 @@ public class User {
     private String email;
 
     @NotBlank(message = "Логин не может быть пустым")
-    @Pattern(regexp = "\\S+", message = "Логин не может содержать пробелы")
+    @Pattern(regexp = "^\\S+$", message = "Логин не может содержать пробелы")
     private String login;
 
     private String name;
 
-    @PastOrPresent(message = "Дата рождения не может быть в будущем")
+    @NotNull(message = "Дата рождения обязательна")
+    @Past(message = "Дата рождения не может быть в будущем")
     private LocalDate birthday;
 
-    public void setName(String name) {
-        this.name = (name == null || name.isBlank()) ? this.login : name;
-    }
+    @Builder.Default
+    private Set<Integer> friends = new HashSet<>();
 
-    public User(int id, String email, String login, String name, LocalDate birthday) {
-        this.id = id;
-        this.email = email;
-        this.login = login;
-        this.setName(name); // Используем наш сеттер
-        this.birthday = birthday;
+    public void fillNameIfEmpty() {
+        if (name == null || name.isBlank()) {
+            name = login;
+        }
     }
 }
