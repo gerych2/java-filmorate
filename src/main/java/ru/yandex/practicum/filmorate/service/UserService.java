@@ -2,12 +2,10 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +28,7 @@ public class UserService {
 
     public User getUserById(int id) {
         return userStorage.getById(id)
-                .orElseThrow(() -> new ValidationException("Пользователь с id " + id + " не найден."));
+                .orElseThrow(() -> new NoSuchElementException("Пользователь с id " + id + " не найден."));
     }
 
     public void addFriend(int userId, int friendId) {

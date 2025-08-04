@@ -2,13 +2,11 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,11 +49,11 @@ public class FilmService {
 
     private Film getFilmById(int id) {
         return filmStorage.getById(id)
-                .orElseThrow(() -> new ValidationException("Фильм с id " + id + " не найден."));
+                .orElseThrow(() -> new NoSuchElementException("Фильм с id " + id + " не найден."));
     }
 
     private void checkUserExists(int userId) {
         userStorage.getById(userId)
-                .orElseThrow(() -> new ValidationException("Пользователь с id " + userId + " не найден."));
+                .orElseThrow(() -> new NoSuchElementException("Пользователь с id " + userId + " не найден."));
     }
 }
