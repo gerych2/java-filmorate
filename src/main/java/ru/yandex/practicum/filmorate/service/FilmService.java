@@ -19,12 +19,8 @@ public class FilmService {
     private final UserStorage userStorage;
 
     public Film addFilm(Film film) {
-        if (film.getReleaseDate() == null) {
-            throw new ValidationException("Дата релиза не может быть пустой");
-        }
         return filmStorage.add(film);
     }
-
 
     public Film updateFilm(Film film) {
         return filmStorage.update(film);
