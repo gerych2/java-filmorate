@@ -5,6 +5,7 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -24,16 +25,19 @@ class UserValidationTest {
     }
 
     @Test
+    @DisplayName("Имя должно принимать значение логина, если имя не указано")
     void shouldUseLoginAsNameWhenNameIsEmpty() {
         User user = User.builder()
-                .email("valid@example.com")
                 .login("validLogin")
+                .email("test@example.com")
                 .birthday(LocalDate.of(1990, 1, 1))
                 .build();
 
-        assertEquals("validLogin", user.getName(),
-                "Имя должно быть равно логину, если имя не указано");
+        user.fillNameIfEmpty();
+
+        assertEquals("validLogin", user.getName(), "Имя должно быть равно логину, если имя не указано");
     }
+
 
     @Test
     void shouldKeepNameWhenNameIsProvided() {
