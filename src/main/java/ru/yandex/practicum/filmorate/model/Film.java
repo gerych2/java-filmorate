@@ -1,15 +1,15 @@
 package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.constraints.*;
-import lombok.Data;
-import lombok.Builder;
-import ru.yandex.practicum.filmorate.validation.ReleaseDateConstraint;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Film {
     private int id;
@@ -20,13 +20,11 @@ public class Film {
     @Size(max = 200, message = "Описание не может превышать 200 символов")
     private String description;
 
-    @NotNull(message = "Дата релиза не может быть пустой")
-    @ReleaseDateConstraint
+    @NotNull(message = "Дата релиза обязательна")
     private LocalDate releaseDate;
 
     @Positive(message = "Продолжительность должна быть положительной")
     private int duration;
 
-    @Builder.Default
     private Set<Integer> likes = new HashSet<>();
 }
