@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+
 import java.time.LocalDate;
 
 public class ReleaseDateValidator implements ConstraintValidator<ReleaseDateConstraint, LocalDate> {
@@ -10,6 +11,9 @@ public class ReleaseDateValidator implements ConstraintValidator<ReleaseDateCons
 
     @Override
     public boolean isValid(LocalDate value, ConstraintValidatorContext context) {
-        return value != null && !value.isBefore(CINEMA_BIRTH);
+        if (value == null) {
+            return true;
+        }
+        return !value.isBefore(CINEMA_BIRTH);
     }
 }

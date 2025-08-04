@@ -1,14 +1,10 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,4 +29,10 @@ public class User {
 
     @Builder.Default
     private Set<Integer> friends = new HashSet<>();
+
+    public void fillNameIfEmpty() {
+        if (name == null || name.isBlank()) {
+            name = login;
+        }
+    }
 }
