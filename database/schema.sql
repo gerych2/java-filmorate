@@ -1,3 +1,11 @@
+CREATE TABLE IF NOT EXISTS users (
+    user_id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    login VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(255),
+    birthday DATE NOT NULL
+    );
+
 CREATE TABLE IF NOT EXISTS friendship (
     user_id INT REFERENCES users(user_id),
     friend_id INT REFERENCES users(user_id),
