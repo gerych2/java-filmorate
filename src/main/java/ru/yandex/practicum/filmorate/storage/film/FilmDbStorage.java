@@ -24,7 +24,7 @@ public class FilmDbStorage implements FilmStorage {
 
     private final RowMapper<Film> filmRowMapper = (ResultSet rs, int rowNum) -> {
         Film film = new Film();
-        film.setId(rs.getLong("id"));
+        film.setId(rs.getLong("film_id"));
         film.setName(rs.getString("name"));
         film.setDescription(rs.getString("description"));
         film.setReleaseDate(rs.getDate("release_date").toLocalDate());
@@ -44,7 +44,7 @@ public class FilmDbStorage implements FilmStorage {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"film_id"});
             ps.setString(1, film.getName());
             ps.setString(2, film.getDescription());
             ps.setDate(3, java.sql.Date.valueOf(film.getReleaseDate()));

@@ -63,21 +63,17 @@ class FilmorateApplicationTests {
 
     @Test
     public void testUpdateUser() {
-        // Создаем пользователя с уникальными данными
-        User user = User.builder()
-                .email("updateuser@test.com")
-                .login("updateuserlogin")
-                .name("Update User")
-                .birthday(LocalDate.of(1985, 3, 10))
-                .build();
+        // Получаем существующего пользователя из data.sql
+        Optional<User> existingUser = userStorage.getById(1L);
+        assertThat(existingUser).isPresent();
 
-        User savedUser = userStorage.add(user);
+        User userToUpdate = existingUser.get();
 
         // Обновляем пользователя
-        savedUser.setName("Updated Name");
-        savedUser.setEmail("updateduser@test.com");
+        userToUpdate.setName("Updated Name");
+        userToUpdate.setEmail("updateduser@test.com");
 
-        User updatedUser = userStorage.update(savedUser);
+        User updatedUser = userStorage.update(userToUpdate);
 
         assertThat(updatedUser.getName()).isEqualTo("Updated Name");
         assertThat(updatedUser.getEmail()).isEqualTo("updateduser@test.com");
