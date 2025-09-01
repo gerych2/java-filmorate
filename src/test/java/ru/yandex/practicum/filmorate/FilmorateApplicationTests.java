@@ -20,7 +20,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @Import({UserDbStorage.class})
-class FilmoRateApplicationTests {
+class FilmorateApplicationTests {
     private final UserDbStorage userStorage;
 
     @Test
@@ -32,9 +32,9 @@ class FilmoRateApplicationTests {
                 .name("Test User")
                 .birthday(LocalDate.of(1990, 1, 1))
                 .build();
-        
+
         User savedUser = userStorage.add(user);
-        
+
         // Ищем пользователя по id
         Optional<User> userOptional = userStorage.getById(savedUser.getId());
 
@@ -53,9 +53,9 @@ class FilmoRateApplicationTests {
                 .name("New User")
                 .birthday(LocalDate.of(1995, 5, 15))
                 .build();
-        
+
         User savedUser = userStorage.add(user);
-        
+
         assertThat(savedUser.getId()).isPositive();
         assertThat(savedUser.getEmail()).isEqualTo("new@test.com");
         assertThat(savedUser.getLogin()).isEqualTo("newlogin");
@@ -70,15 +70,15 @@ class FilmoRateApplicationTests {
                 .name("Update User")
                 .birthday(LocalDate.of(1985, 3, 10))
                 .build();
-        
+
         User savedUser = userStorage.add(user);
         
         // Обновляем пользователя
         savedUser.setName("Updated Name");
         savedUser.setEmail("updated@test.com");
-        
+
         User updatedUser = userStorage.update(savedUser);
-        
+
         assertThat(updatedUser.getName()).isEqualTo("Updated Name");
         assertThat(updatedUser.getEmail()).isEqualTo("updated@test.com");
     }
@@ -90,9 +90,9 @@ class FilmoRateApplicationTests {
                 .email("user1@test.com")
                 .login("user1")
                 .name("User 1")
-                .birthday(LocalDate.of(1990, 1, 1))
+                                .birthday(LocalDate.of(1990, 1, 1))
                 .build();
-        
+
         User user2 = User.builder()
                 .email("user2@test.com")
                 .login("user2")
@@ -102,9 +102,9 @@ class FilmoRateApplicationTests {
         
         userStorage.add(user1);
         userStorage.add(user2);
-        
+
         List<User> allUsers = userStorage.getAll();
-        
+
         assertThat(allUsers.size()).isGreaterThanOrEqualTo(2);
     }
 
@@ -127,13 +127,13 @@ class FilmoRateApplicationTests {
         
         User savedUser1 = userStorage.add(user1);
         User savedUser2 = userStorage.add(user2);
-        
+
         // Добавляем друга
         userStorage.addFriend(savedUser1.getId(), savedUser2.getId());
         
         List<Long> friends = userStorage.getFriends(savedUser1.getId());
         assertThat(friends).asList().contains(savedUser2.getId());
-        
+
         // Удаляем друга
         userStorage.removeFriend(savedUser1.getId(), savedUser2.getId());
         
