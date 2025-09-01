@@ -126,7 +126,7 @@ class FilmorateApplicationTests {
                 .build();
         
         User savedUser1 = userStorage.add(user1);
-                User savedUser2 = userStorage.add(user2);
+		User savedUser2 = userStorage.add(user2);
 
         // Добавляем друга
         userStorage.addFriend(savedUser1.getId(), savedUser2.getId());
