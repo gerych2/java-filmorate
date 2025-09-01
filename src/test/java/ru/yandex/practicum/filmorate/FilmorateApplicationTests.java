@@ -110,7 +110,6 @@ class FilmorateApplicationTests {
 
     @Test
     public void testAddAndRemoveFriend() {
-        // Создаем двух пользователей
         User user1 = User.builder()
                 .email("friend1@test.com")
                 .login("friend1")
@@ -126,15 +125,13 @@ class FilmorateApplicationTests {
                 .build();
         
         User savedUser1 = userStorage.add(user1);
-		User savedUser2 = userStorage.add(user2);
+        User savedUser2 = userStorage.add(user2);
 
-        // Добавляем друга
         userStorage.addFriend(savedUser1.getId(), savedUser2.getId());
 
         List<Long> friends = userStorage.getFriends(savedUser1.getId());
         assertThat(friends).asList().contains(savedUser2.getId());
 
-        // Удаляем друга
         userStorage.removeFriend(savedUser1.getId(), savedUser2.getId());
 
         friends = userStorage.getFriends(savedUser1.getId());
