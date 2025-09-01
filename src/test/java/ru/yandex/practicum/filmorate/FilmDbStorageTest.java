@@ -90,7 +90,7 @@ class FilmDbStorageTest {
                 .build();
 
         Film savedFilm = filmStorage.add(film);
-        
+
         savedFilm.setName("Updated Film");
         savedFilm.setDescription("Updated Description");
 
