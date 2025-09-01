@@ -42,7 +42,7 @@ public class FilmDbStorage implements FilmStorage {
     public Film add(Film film) {
         String sql = "INSERT INTO films (name, description, release_date, duration, mpa_id) VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        
+
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, film.getName());
@@ -52,7 +52,7 @@ public class FilmDbStorage implements FilmStorage {
             ps.setLong(5, film.getMpa().getId());
             return ps;
         }, keyHolder);
-        
+
         film.setId(keyHolder.getKey().longValue());
 
         // Сохраняем жанры
