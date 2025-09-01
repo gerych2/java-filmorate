@@ -28,6 +28,8 @@ public class UserService {
 
     public User updateUser(User user) {
         user.fillNameIfEmpty();
+        // Проверяем существование пользователя перед обновлением
+        getUserById(user.getId());
         return userStorage.update(user);
     }
 
