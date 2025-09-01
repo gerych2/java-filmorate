@@ -12,3 +12,6 @@ MERGE INTO genres (id, name) VALUES (3, 'Мультфильм');
 MERGE INTO genres (id, name) VALUES (4, 'Триллер');
 MERGE INTO genres (id, name) VALUES (5, 'Документальный');
 MERGE INTO genres (id, name) VALUES (6, 'Боевик');
+
+-- Вставка тестового пользователя
+MERGE INTO users (id, email, login, name, birthday) VALUES (1, 'test@test.com', 'testuser', 'Test User', '1990-01-01');

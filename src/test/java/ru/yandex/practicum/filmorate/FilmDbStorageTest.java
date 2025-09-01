@@ -144,16 +144,17 @@ class FilmDbStorageTest {
 
         Film savedFilm = filmStorage.add(film);
 
-        // Добавляем лайк
-        filmStorage.addLike(savedFilm.getId(), 1L);
+        // Добавляем лайк от пользователя с ID 1 (который должен существовать в data.sql)
+        Long userId = 1L;
+        filmStorage.addLike(savedFilm.getId(), userId);
 
         List<Long> likes = filmStorage.getLikes(savedFilm.getId());
-        assertThat(likes).asList().contains(1L);
+        assertThat(likes).asList().contains(userId);
 
         // Удаляем лайк
-        filmStorage.removeLike(savedFilm.getId(), 1L);
+        filmStorage.removeLike(savedFilm.getId(), userId);
 
         likes = filmStorage.getLikes(savedFilm.getId());
-        assertThat(likes).asList().doesNotContain(1L);
+        assertThat(likes).asList().doesNotContain(userId);
     }
 }
