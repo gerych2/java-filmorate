@@ -63,10 +63,10 @@ class FilmorateApplicationTests {
 
     @Test
     public void testUpdateUser() {
-        // Создаем пользователя
+        // Создаем пользователя с уникальными данными
         User user = User.builder()
-                .email("update@test.com")
-                .login("updatelogin")
+                .email("updateuser@test.com")
+                .login("updateuserlogin")
                 .name("Update User")
                 .birthday(LocalDate.of(1985, 3, 10))
                 .build();
@@ -75,12 +75,12 @@ class FilmorateApplicationTests {
 
         // Обновляем пользователя
         savedUser.setName("Updated Name");
-        savedUser.setEmail("updated@test.com");
+        savedUser.setEmail("updateduser@test.com");
 
         User updatedUser = userStorage.update(savedUser);
 
         assertThat(updatedUser.getName()).isEqualTo("Updated Name");
-        assertThat(updatedUser.getEmail()).isEqualTo("updated@test.com");
+        assertThat(updatedUser.getEmail()).isEqualTo("updateduser@test.com");
     }
 
     @Test
