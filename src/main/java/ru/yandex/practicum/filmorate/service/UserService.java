@@ -64,7 +64,7 @@ public class UserService {
     public List<User> getCommonFriends(Long userId, Long otherId) {
         getUserById(userId); // Проверяем существование пользователя
         getUserById(otherId); // Проверяем существование другого пользователя
-        
+
         List<Long> userFriends = userDbStorage.getFriends(userId);
         List<Long> otherFriends = userDbStorage.getFriends(otherId);
 

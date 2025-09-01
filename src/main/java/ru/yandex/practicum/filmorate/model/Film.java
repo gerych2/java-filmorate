@@ -32,7 +32,7 @@ public class Film {
     private Set<Long> likes = new HashSet<>();
 
     private Mpa mpa;
-    
+
     @Builder.Default
     private Set<Genre> genres = new HashSet<>();
 

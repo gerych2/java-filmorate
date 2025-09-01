@@ -64,8 +64,6 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
-
-
     private void checkUserExists(Long userId) {
         userStorage.getById(userId)
                 .orElseThrow(() -> new NoSuchElementException("Пользователь с id " + userId + " не найден."));
