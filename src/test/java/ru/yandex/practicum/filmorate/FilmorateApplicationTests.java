@@ -90,7 +90,7 @@ class FilmorateApplicationTests {
                 .email("user1@test.com")
                 .login("user1")
                 .name("User 1")
-                                .birthday(LocalDate.of(1990, 1, 1))
+                .birthday(LocalDate.of(1990, 1, 1))
                 .build();
 
         User user2 = User.builder()
@@ -123,7 +123,7 @@ class FilmorateApplicationTests {
                 .name("Friend 2")
                 .birthday(LocalDate.of(1995, 5, 15))
                 .build();
-        
+
         User savedUser1 = userStorage.add(user1);
         User savedUser2 = userStorage.add(user2);
 
