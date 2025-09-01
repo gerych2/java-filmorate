@@ -30,12 +30,12 @@ class FilmDbStorageTest {
     public void testCreateFilm() {
         Mpa mpa = new Mpa();
         mpa.setId(1L);
-        
+
         Set<Genre> genres = new HashSet<>();
         Genre genre = new Genre();
         genre.setId(1L);
         genres.add(genre);
-        
+
         Film film = Film.builder()
                 .name("Test Film")
                 .description("Test Description")
@@ -44,9 +44,9 @@ class FilmDbStorageTest {
                 .mpa(mpa)
                 .genres(genres)
                 .build();
-        
+
         Film savedFilm = filmStorage.add(film);
-        
+
         assertThat(savedFilm.getId()).isPositive();
         assertThat(savedFilm.getName()).isEqualTo("Test Film");
         assertThat(savedFilm.getDescription()).isEqualTo("Test Description");
@@ -56,7 +56,7 @@ class FilmDbStorageTest {
     public void testFindFilmById() {
         Mpa mpa = new Mpa();
         mpa.setId(1L);
-        
+
         Film film = Film.builder()
                 .name("Find Film")
                 .description("Find Description")
@@ -64,11 +64,11 @@ class FilmDbStorageTest {
                 .duration(90)
                 .mpa(mpa)
                 .build();
-        
+
         Film savedFilm = filmStorage.add(film);
-        
+
         Optional<Film> filmOptional = filmStorage.getById(savedFilm.getId());
-        
+
         assertThat(filmOptional)
                 .isPresent()
                 .hasValueSatisfying(filmFound ->
@@ -80,7 +80,7 @@ class FilmDbStorageTest {
     public void testUpdateFilm() {
         Mpa mpa = new Mpa();
         mpa.setId(1L);
-        
+
         Film film = Film.builder()
                 .name("Update Film")
                 .description("Update Description")
@@ -88,14 +88,14 @@ class FilmDbStorageTest {
                 .duration(150)
                 .mpa(mpa)
                 .build();
-        
+
         Film savedFilm = filmStorage.add(film);
         
         savedFilm.setName("Updated Film");
         savedFilm.setDescription("Updated Description");
-        
+
         Film updatedFilm = filmStorage.update(savedFilm);
-        
+
         assertThat(updatedFilm.getName()).isEqualTo("Updated Film");
         assertThat(updatedFilm.getDescription()).isEqualTo("Updated Description");
     }
@@ -104,7 +104,7 @@ class FilmDbStorageTest {
     public void testGetAllFilms() {
         Mpa mpa = new Mpa();
         mpa.setId(1L);
-        
+
         Film film1 = Film.builder()
                 .name("Film 1")
                 .description("Description 1")
@@ -112,7 +112,7 @@ class FilmDbStorageTest {
                 .duration(120)
                 .mpa(mpa)
                 .build();
-        
+
         Film film2 = Film.builder()
                 .name("Film 2")
                 .description("Description 2")
@@ -120,12 +120,12 @@ class FilmDbStorageTest {
                 .duration(90)
                 .mpa(mpa)
                 .build();
-        
+
         filmStorage.add(film1);
         filmStorage.add(film2);
-        
+
         List<Film> allFilms = filmStorage.getAll();
-        
+
         assertThat(allFilms.size()).isGreaterThanOrEqualTo(2);
     }
 
@@ -133,7 +133,7 @@ class FilmDbStorageTest {
     public void testAddAndRemoveLike() {
         Mpa mpa = new Mpa();
         mpa.setId(1L);
-        
+
         Film film = Film.builder()
                 .name("Like Film")
                 .description("Like Description")
@@ -141,18 +141,18 @@ class FilmDbStorageTest {
                 .duration(180)
                 .mpa(mpa)
                 .build();
-        
+
         Film savedFilm = filmStorage.add(film);
-        
+
         // Добавляем лайк
         filmStorage.addLike(savedFilm.getId(), 1L);
-        
+
         List<Long> likes = filmStorage.getLikes(savedFilm.getId());
         assertThat(likes).asList().contains(1L);
-        
+
         // Удаляем лайк
         filmStorage.removeLike(savedFilm.getId(), 1L);
-        
+
         likes = filmStorage.getLikes(savedFilm.getId());
         assertThat(likes).asList().doesNotContain(1L);
     }
