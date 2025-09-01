@@ -32,7 +32,7 @@ public class UserDbStorage implements UserStorage {
     public User add(User user) {
         String sql = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        
+
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, user.getEmail());
@@ -41,7 +41,7 @@ public class UserDbStorage implements UserStorage {
             ps.setDate(4, java.sql.Date.valueOf(user.getBirthday()));
             return ps;
         }, keyHolder);
-        
+
         user.setId(keyHolder.getKey().longValue());
         return user;
     }
