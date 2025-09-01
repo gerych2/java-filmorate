@@ -9,9 +9,9 @@ import java.util.NoSuchElementException;
 @Component
 public class InMemoryUserStorage implements UserStorage {
 
-    private final Map<Integer, User> users = new HashMap<>();
+    private final Map<Long, User> users = new HashMap<>();
 
-    private int currentId = 1;
+    private long currentId = 1;
 
     @Override
     public User add(User user) {
@@ -35,7 +35,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Optional<User> getById(int id) {
+    public Optional<User> getById(Long id) {
         return Optional.ofNullable(users.get(id));
     }
 }

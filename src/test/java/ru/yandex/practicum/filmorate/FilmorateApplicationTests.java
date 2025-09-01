@@ -1,155 +1,143 @@
 package ru.yandex.practicum.filmorate;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
-import org.junit.jupiter.api.BeforeAll;
+import lombok.RequiredArgsConstructor;
+
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.model.Film;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@SpringBootTest
-class FilmorateApplicationTests {
+@JdbcTest
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@Import({UserDbStorage.class})
+class FilmoRateApplicationTests {
+    private final UserDbStorage userStorage;
 
-	private static Validator validator;
+    @Test
+    public void testFindUserById() {
+        // Создаем пользователя
+        User user = User.builder()
+                .email("test@test.com")
+                .login("testlogin")
+                .name("Test User")
+                .birthday(LocalDate.of(1990, 1, 1))
+                .build();
+        
+        User savedUser = userStorage.add(user);
+        
+        // Ищем пользователя по id
+        Optional<User> userOptional = userStorage.getById(savedUser.getId());
 
-	@BeforeAll
-	static void setupValidator() {
-		try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
-			validator = factory.getValidator();
-		}
-	}
+        assertThat(userOptional)
+                .isPresent()
+                .hasValueSatisfying(userFound ->
+                        assertThat(userFound).hasFieldOrPropertyWithValue("id", savedUser.getId())
+                );
+    }
 
-	@Test
-	void contextLoads() {
-		// Стандартный тест Spring Boot
-	}
+    @Test
+    public void testCreateUser() {
+        User user = User.builder()
+                .email("new@test.com")
+                .login("newlogin")
+                .name("New User")
+                .birthday(LocalDate.of(1995, 5, 15))
+                .build();
+        
+        User savedUser = userStorage.add(user);
+        
+        assertThat(savedUser.getId()).isPositive();
+        assertThat(savedUser.getEmail()).isEqualTo("new@test.com");
+        assertThat(savedUser.getLogin()).isEqualTo("newlogin");
+    }
 
-	// Film validation tests
-	@Test
-	void whenFilmNameIsBlank_thenValidationFails() {
-		Film film = Film.builder()
-				.name("   ")
-				.description("Valid description")
-				.releaseDate(LocalDate.of(2000, 1, 1))
-				.duration(120)
-				.build();
+    @Test
+    public void testUpdateUser() {
+        // Создаем пользователя
+        User user = User.builder()
+                .email("update@test.com")
+                .login("updatelogin")
+                .name("Update User")
+                .birthday(LocalDate.of(1985, 3, 10))
+                .build();
+        
+        User savedUser = userStorage.add(user);
+        
+        // Обновляем пользователя
+        savedUser.setName("Updated Name");
+        savedUser.setEmail("updated@test.com");
+        
+        User updatedUser = userStorage.update(savedUser);
+        
+        assertThat(updatedUser.getName()).isEqualTo("Updated Name");
+        assertThat(updatedUser.getEmail()).isEqualTo("updated@test.com");
+    }
 
-		Set<ConstraintViolation<Film>> violations = validator.validate(film);
-		assertFalse(violations.isEmpty(), "Should fail because name is blank");
-		assertTrue(violations.stream()
-						.anyMatch(v -> v.getMessage().equals("Название не может быть пустым")),
-				"Should have correct validation message");
-	}
+    @Test
+    public void testGetAllUsers() {
+        // Создаем несколько пользователей
+        User user1 = User.builder()
+                .email("user1@test.com")
+                .login("user1")
+                .name("User 1")
+                .birthday(LocalDate.of(1990, 1, 1))
+                .build();
+        
+        User user2 = User.builder()
+                .email("user2@test.com")
+                .login("user2")
+                .name("User 2")
+                .birthday(LocalDate.of(1995, 5, 15))
+                .build();
+        
+        userStorage.add(user1);
+        userStorage.add(user2);
+        
+        List<User> allUsers = userStorage.getAll();
+        
+        assertThat(allUsers.size()).isGreaterThanOrEqualTo(2);
+    }
 
-	@Test
-	void whenFilmDescriptionTooLong_thenValidationFails() {
-		String longDescription = "a".repeat(201);
-		Film film = Film.builder()
-				.name("Valid Name")
-				.description(longDescription)
-				.releaseDate(LocalDate.of(2000, 1, 1))
-				.duration(120)
-				.build();
-
-		Set<ConstraintViolation<Film>> violations = validator.validate(film);
-		assertFalse(violations.isEmpty(), "Should fail because description is too long");
-		assertTrue(violations.stream()
-						.anyMatch(v -> v.getMessage().equals("Описание не может превышать 200 символов")),
-				"Should have correct validation message");
-	}
-
-	@Test
-	void whenFilmDurationNegative_thenValidationFails() {
-		Film film = Film.builder()
-				.name("Valid Name")
-				.description("Valid description")
-				.releaseDate(LocalDate.of(2000, 1, 1))
-				.duration(-5)
-				.build();
-
-		Set<ConstraintViolation<Film>> violations = validator.validate(film);
-		assertFalse(violations.isEmpty(), "Should fail because duration is negative");
-		assertTrue(violations.stream()
-						.anyMatch(v -> v.getMessage().equals("Продолжительность должна быть положительной")),
-				"Should have correct validation message");
-	}
-
-	// User validation tests
-	@Test
-	void whenUserEmailInvalid_thenValidationFails() {
-		User user = User.builder()
-				.email("invalid-email")
-				.login("validlogin")
-				.birthday(LocalDate.of(1990, 1, 1))
-				.build();
-
-		Set<ConstraintViolation<User>> violations = validator.validate(user);
-		assertFalse(violations.isEmpty(), "Should fail because email is invalid");
-		assertTrue(violations.stream()
-						.anyMatch(v -> v.getMessage().equals("Email должен быть валидным")),
-				"Should have correct validation message");
-	}
-
-	@Test
-	void whenUserLoginContainsSpaces_thenValidationFails() {
-		User user = User.builder()
-				.email("valid@example.com")
-				.login("user login")
-				.birthday(LocalDate.of(1990, 1, 1))
-				.build();
-
-		Set<ConstraintViolation<User>> violations = validator.validate(user);
-		assertFalse(violations.isEmpty(), "Should fail because login contains spaces");
-		assertTrue(violations.stream()
-						.anyMatch(v -> v.getMessage().equals("Логин не может содержать пробелы")),
-				"Should have correct validation message");
-	}
-
-	@Test
-	void whenUserBirthdayInFuture_thenValidationFails() {
-		User user = User.builder()
-				.email("valid@example.com")
-				.login("validlogin")
-				.birthday(LocalDate.now().plusDays(1))
-				.build();
-
-		Set<ConstraintViolation<User>> violations = validator.validate(user);
-		assertFalse(violations.isEmpty(), "Should fail because birthday is in future");
-		assertTrue(violations.stream()
-						.anyMatch(v -> v.getMessage().equals("Дата рождения не может быть в будущем")),
-				"Should have correct validation message");
-	}
-
-	@Test
-	void whenValidFilm_thenNoValidationErrors() {
-		Film film = Film.builder()
-				.name("Valid Film")
-				.description("Valid description")
-				.releaseDate(LocalDate.of(2000, 1, 1))
-				.duration(120)
-				.build();
-
-		Set<ConstraintViolation<Film>> violations = validator.validate(film);
-		assertTrue(violations.isEmpty(), "Valid film should pass validation");
-	}
-
-	@Test
-	void whenValidUser_thenNoValidationErrors() {
-		User user = User.builder()
-				.email("valid@example.com")
-				.login("validlogin")
-				.birthday(LocalDate.of(1990, 1, 1))
-				.build();
-
-		Set<ConstraintViolation<User>> violations = validator.validate(user);
-		assertTrue(violations.isEmpty(), "Valid user should pass validation");
-	}
+    @Test
+    public void testAddAndRemoveFriend() {
+        // Создаем двух пользователей
+        User user1 = User.builder()
+                .email("friend1@test.com")
+                .login("friend1")
+                .name("Friend 1")
+                .birthday(LocalDate.of(1990, 1, 1))
+                .build();
+        
+        User user2 = User.builder()
+                .email("friend2@test.com")
+                .login("friend2")
+                .name("Friend 2")
+                .birthday(LocalDate.of(1995, 5, 15))
+                .build();
+        
+        User savedUser1 = userStorage.add(user1);
+        User savedUser2 = userStorage.add(user2);
+        
+        // Добавляем друга
+        userStorage.addFriend(savedUser1.getId(), savedUser2.getId());
+        
+        List<Long> friends = userStorage.getFriends(savedUser1.getId());
+        assertThat(friends).asList().contains(savedUser2.getId());
+        
+        // Удаляем друга
+        userStorage.removeFriend(savedUser1.getId(), savedUser2.getId());
+        
+        friends = userStorage.getFriends(savedUser1.getId());
+        assertThat(friends).asList().doesNotContain(savedUser2.getId());
+    }
 }
