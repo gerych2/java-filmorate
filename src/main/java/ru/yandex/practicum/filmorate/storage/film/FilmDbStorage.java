@@ -29,12 +29,12 @@ public class FilmDbStorage implements FilmStorage {
         film.setDescription(rs.getString("description"));
         film.setReleaseDate(rs.getDate("release_date").toLocalDate());
         film.setDuration(rs.getInt("duration"));
-        
+
         // Устанавливаем MPA
         Mpa mpa = new Mpa();
         mpa.setId(rs.getLong("mpa_id"));
         film.setMpa(mpa);
-        
+
         return film;
     };
 
@@ -54,12 +54,12 @@ public class FilmDbStorage implements FilmStorage {
         }, keyHolder);
         
         film.setId(keyHolder.getKey().longValue());
-        
+
         // Сохраняем жанры
         if (film.getGenres() != null && !film.getGenres().isEmpty()) {
             saveFilmGenres(film.getId(), film.getGenres());
         }
-        
+
         return film;
     }
 
@@ -73,13 +73,13 @@ public class FilmDbStorage implements FilmStorage {
                 film.getDuration(),
                 film.getMpa().getId(),
                 film.getId());
-        
+
         // Обновляем жанры
         deleteFilmGenres(film.getId());
         if (film.getGenres() != null && !film.getGenres().isEmpty()) {
             saveFilmGenres(film.getId(), film.getGenres());
         }
-        
+
         return film;
     }
 
@@ -91,12 +91,12 @@ public class FilmDbStorage implements FilmStorage {
             film.getMpa().setName(rs.getString("mpa_name"));
             return film;
         });
-        
+
         // Загружаем жанры для каждого фильма
         for (Film film : films) {
             film.setGenres(loadFilmGenres(film.getId()));
         }
-        
+
         return films;
     }
 
@@ -108,11 +108,11 @@ public class FilmDbStorage implements FilmStorage {
             film.getMpa().setName(rs.getString("mpa_name"));
             return film;
         }, id);
-        
+
         if (films.isEmpty()) {
             return Optional.empty();
         }
-        
+
         Film film = films.get(0);
         film.setGenres(loadFilmGenres(film.getId()));
         return Optional.of(film);
