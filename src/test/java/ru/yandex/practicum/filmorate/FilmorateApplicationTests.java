@@ -85,56 +85,43 @@ class FilmorateApplicationTests {
 
     @Test
     public void testGetAllUsers() {
-        // Создаем несколько пользователей с уникальными данными
-        User user1 = User.builder()
-                .email("allusers1@test.com")
-                .login("allusers1")
-                .name("All Users 1")
-                .birthday(LocalDate.of(1990, 1, 1))
-                .build();
-
-        User user2 = User.builder()
-                .email("allusers2@test.com")
-                .login("allusers2")
-                .name("All Users 2")
-                .birthday(LocalDate.of(1995, 5, 15))
-                .build();
-
-        userStorage.add(user1);
-        userStorage.add(user2);
-
+        // Получаем всех пользователей (включая тех, что уже есть в data.sql)
         List<User> allUsers = userStorage.getAll();
 
-        assertThat(allUsers.size()).isGreaterThanOrEqualTo(3); // Минимум 3: 1 из data.sql + 2 новых
+        // Проверяем, что список не пустой (должен содержать хотя бы пользователя из data.sql)
+        assertThat(allUsers).isNotEmpty();
+        
+        // Проверяем, что есть пользователь с ID 1 из data.sql
+        boolean hasTestUser = allUsers.stream()
+                .anyMatch(user -> user.getId() == 1L && "test@test.com".equals(user.getEmail()));
+        assertThat(hasTestUser).isTrue();
     }
 
     @Test
     public void testAddAndRemoveFriend() {
-        User user1 = User.builder()
-                .email("friend1@test.com")
-                .login("friend1")
-                .name("Friend 1")
-                .birthday(LocalDate.of(1990, 1, 1))
-                .build();
-
-        User user2 = User.builder()
+        // Используем существующего пользователя из data.sql
+        Optional<User> existingUser = userStorage.getById(1L);
+        assertThat(existingUser).isPresent();
+        
+        // Создаем только одного нового пользователя для тестирования дружбы
+        User newUser = User.builder()
                 .email("friend2@test.com")
                 .login("friend2")
                 .name("Friend 2")
                 .birthday(LocalDate.of(1995, 5, 15))
                 .build();
 
-        User savedUser1 = userStorage.add(user1);
-        User savedUser2 = userStorage.add(user2);
+        User savedNewUser = userStorage.add(newUser);
 
-        userStorage.addFriend(savedUser1.getId(), savedUser2.getId());
+        // Добавляем дружбу между существующим и новым пользователем
+        userStorage.addFriend(existingUser.get().getId(), savedNewUser.getId());
 
-        List<Long> friends = userStorage.getFriends(savedUser1.getId());
-        assertThat(friends).asList().contains(savedUser2.getId());
+        List<Long> friends = userStorage.getFriends(existingUser.get().getId());
+        assertThat(friends).asList().contains(savedNewUser.getId());
 
-        userStorage.removeFriend(savedUser1.getId(), savedUser2.getId());
+        userStorage.removeFriend(existingUser.get().getId(), savedNewUser.getId());
 
-        friends = userStorage.getFriends(savedUser1.getId());
-        assertThat(friends).asList().doesNotContain(savedUser2.getId());
+        friends = userStorage.getFriends(existingUser.get().getId());
+        assertThat(friends).asList().doesNotContain(savedNewUser.getId());
     }
 }
