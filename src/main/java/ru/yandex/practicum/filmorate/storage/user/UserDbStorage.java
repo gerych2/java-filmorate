@@ -18,9 +18,10 @@ import java.util.Optional;
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
 
+    // RowMapper для User
     private final RowMapper<User> userRowMapper = (ResultSet rs, int rowNum) -> {
         User user = new User();
-        user.setId(rs.getLong("id")); // поле из schema.sql
+        user.setId(rs.getLong("id")); // используем единый id
         user.setEmail(rs.getString("email"));
         user.setLogin(rs.getString("login"));
         user.setName(rs.getString("name"));
@@ -71,8 +72,9 @@ public class UserDbStorage implements UserStorage {
         return users.isEmpty() ? Optional.empty() : Optional.of(users.get(0));
     }
 
+    // Работа с дружбой
     public void addFriend(Long userId, Long friendId) {
-        String sql = "INSERT INTO friendship (user_id, friend_id) VALUES (?, ?)";
+        String sql = "MERGE INTO friendship (user_id, friend_id) KEY(user_id, friend_id) VALUES (?, ?)";
         jdbcTemplate.update(sql, userId, friendId);
     }
 

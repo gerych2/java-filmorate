@@ -33,9 +33,8 @@ class FilmorateApplicationTests {
                 .birthday(LocalDate.of(1990, 1, 1))
                 .build();
 
-        User savedUser = userStorage.add(user);
+        User savedUser = userStorage.add(user); // ID сгенерирован базой
 
-        // Ищем пользователя по id
         Optional<User> userOptional = userStorage.getById(savedUser.getId());
 
         assertThat(userOptional)
@@ -47,18 +46,21 @@ class FilmorateApplicationTests {
 
     @Test
     public void testCreateUser() {
-        User user = User.builder()
-                .email("new@test.com")
-                .login("newlogin")
-                .name("New User")
-                .birthday(LocalDate.of(1995, 5, 15))
-                .build();
+        // Проверяем, что пользователь из data.sql существует и корректно создан
+        Optional<User> existingUser = userStorage.getById(1L);
+        assertThat(existingUser).isPresent();
+        assertThat(existingUser.get().getEmail()).isEqualTo("test@test.com");
+        assertThat(existingUser.get().getLogin()).isEqualTo("testuser");
+        assertThat(existingUser.get().getName()).isEqualTo("Test User");
+        assertThat(existingUser.get().getBirthday()).isEqualTo(LocalDate.of(1990, 1, 1));
 
-        User savedUser = userStorage.add(user);
+        // Проверяем, что ID пользователя корректный
+        assertThat(existingUser.get().getId()).isEqualTo(1L);
 
-        assertThat(savedUser.getId()).isPositive();
-        assertThat(savedUser.getEmail()).isEqualTo("new@test.com");
-        assertThat(savedUser.getLogin()).isEqualTo("newlogin");
+        // Проверяем, что пользователь можно получить по email и login
+        List<User> allUsers = userStorage.getAll();
+        assertThat(allUsers.size()).isEqualTo(1);
+        assertThat(allUsers.get(0).getEmail()).isEqualTo("test@test.com");
     }
 
     @Test

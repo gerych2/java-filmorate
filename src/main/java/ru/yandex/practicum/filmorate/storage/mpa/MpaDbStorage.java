@@ -15,16 +15,17 @@ import java.util.Optional;
 public class MpaDbStorage implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
 
+    // RowMapper для Mpa
     private final RowMapper<Mpa> mpaRowMapper = (ResultSet rs, int rowNum) -> {
         Mpa mpa = new Mpa();
-        mpa.setId(rs.getLong("id"));   // колонка id из schema.sql
+        mpa.setId(rs.getLong("id"));   // единый id
         mpa.setName(rs.getString("name"));
         return mpa;
     };
 
     @Override
     public List<Mpa> getAll() {
-        String sql = "SELECT * FROM mpa_rating ORDER BY id"; // правильное имя таблицы
+        String sql = "SELECT * FROM mpa_rating ORDER BY id";
         return jdbcTemplate.query(sql, mpaRowMapper);
     }
 
