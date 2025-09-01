@@ -25,11 +25,11 @@ class FilmorateApplicationTests {
 
     @Test
     public void testFindUserById() {
-        // Создаем пользователя
+        // Создаем пользователя с уникальными данными
         User user = User.builder()
-                .email("test@test.com")
-                .login("testlogin")
-                .name("Test User")
+                .email("find@test.com")
+                .login("findlogin")
+                .name("Find User")
                 .birthday(LocalDate.of(1990, 1, 1))
                 .build();
 
@@ -85,18 +85,18 @@ class FilmorateApplicationTests {
 
     @Test
     public void testGetAllUsers() {
-        // Создаем несколько пользователей
+        // Создаем несколько пользователей с уникальными данными
         User user1 = User.builder()
-                .email("user1@test.com")
-                .login("user1")
-                .name("User 1")
+                .email("allusers1@test.com")
+                .login("allusers1")
+                .name("All Users 1")
                 .birthday(LocalDate.of(1990, 1, 1))
                 .build();
 
         User user2 = User.builder()
-                .email("user2@test.com")
-                .login("user2")
-                .name("User 2")
+                .email("allusers2@test.com")
+                .login("allusers2")
+                .name("All Users 2")
                 .birthday(LocalDate.of(1995, 5, 15))
                 .build();
 
@@ -105,7 +105,7 @@ class FilmorateApplicationTests {
 
         List<User> allUsers = userStorage.getAll();
 
-        assertThat(allUsers.size()).isGreaterThanOrEqualTo(2);
+        assertThat(allUsers.size()).isGreaterThanOrEqualTo(3); // Минимум 3: 1 из data.sql + 2 новых
     }
 
     @Test
