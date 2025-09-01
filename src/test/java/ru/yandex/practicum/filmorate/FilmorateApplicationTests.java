@@ -72,7 +72,7 @@ class FilmorateApplicationTests {
                 .build();
 
         User savedUser = userStorage.add(user);
-        
+
         // Обновляем пользователя
         savedUser.setName("Updated Name");
         savedUser.setEmail("updated@test.com");
@@ -99,7 +99,7 @@ class FilmorateApplicationTests {
                 .name("User 2")
                 .birthday(LocalDate.of(1995, 5, 15))
                 .build();
-        
+
         userStorage.add(user1);
         userStorage.add(user2);
 
@@ -117,7 +117,7 @@ class FilmorateApplicationTests {
                 .name("Friend 1")
                 .birthday(LocalDate.of(1990, 1, 1))
                 .build();
-        
+
         User user2 = User.builder()
                 .email("friend2@test.com")
                 .login("friend2")
@@ -130,13 +130,13 @@ class FilmorateApplicationTests {
 
         // Добавляем друга
         userStorage.addFriend(savedUser1.getId(), savedUser2.getId());
-        
+
         List<Long> friends = userStorage.getFriends(savedUser1.getId());
         assertThat(friends).asList().contains(savedUser2.getId());
 
         // Удаляем друга
         userStorage.removeFriend(savedUser1.getId(), savedUser2.getId());
-        
+
         friends = userStorage.getFriends(savedUser1.getId());
         assertThat(friends).asList().doesNotContain(savedUser2.getId());
     }
