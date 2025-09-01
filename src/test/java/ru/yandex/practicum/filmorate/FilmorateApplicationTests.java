@@ -89,8 +89,8 @@ class FilmorateApplicationTests {
         List<User> allUsers = userStorage.getAll();
 
         // Проверяем, что список не пустой (должен содержать хотя бы пользователя из data.sql)
-        assertThat(allUsers).isNotEmpty();
-        
+        assertThat(allUsers.size()).isGreaterThan(0);
+
         // Проверяем, что есть пользователь с ID 1 из data.sql
         boolean hasTestUser = allUsers.stream()
                 .anyMatch(user -> user.getId() == 1L && "test@test.com".equals(user.getEmail()));
@@ -102,7 +102,7 @@ class FilmorateApplicationTests {
         // Используем существующего пользователя из data.sql
         Optional<User> existingUser = userStorage.getById(1L);
         assertThat(existingUser).isPresent();
-        
+
         // Создаем только одного нового пользователя для тестирования дружбы
         User newUser = User.builder()
                 .email("friend2@test.com")
