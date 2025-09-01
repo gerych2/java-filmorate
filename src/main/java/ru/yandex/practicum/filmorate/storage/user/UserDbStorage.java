@@ -20,7 +20,7 @@ public class UserDbStorage implements UserStorage {
 
     private final RowMapper<User> userRowMapper = (ResultSet rs, int rowNum) -> {
         User user = new User();
-        user.setId(rs.getLong("user_id"));
+        user.setId(rs.getLong("id")); // поле из schema.sql
         user.setEmail(rs.getString("email"));
         user.setLogin(rs.getString("login"));
         user.setName(rs.getString("name"));
@@ -34,7 +34,7 @@ public class UserDbStorage implements UserStorage {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"user_id"});
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, user.getEmail());
             ps.setString(2, user.getLogin());
             ps.setString(3, user.getName());
@@ -48,7 +48,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User update(User user) {
-        String sql = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE user_id = ?";
+        String sql = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
         jdbcTemplate.update(sql,
                 user.getEmail(),
                 user.getLogin(),
@@ -66,7 +66,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public Optional<User> getById(Long id) {
-        String sql = "SELECT * FROM users WHERE user_id = ?";
+        String sql = "SELECT * FROM users WHERE id = ?";
         List<User> users = jdbcTemplate.query(sql, userRowMapper, id);
         return users.isEmpty() ? Optional.empty() : Optional.of(users.get(0));
     }
