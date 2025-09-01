@@ -24,13 +24,13 @@ class GenreDbStorageTest {
     @Test
     public void testGetAllGenres() {
         List<Genre> genres = genreStorage.getAll();
-        
+
         assertThat(genres).isNotNull();
         assertThat(genres.size()).isGreaterThan(0);
-        
+
         // Проверяем, что жанры отсортированы по id
         for (int i = 1; i < genres.size(); i++) {
-            assertThat(genres.get(i).getId()).isGreaterThan(genres.get(i-1).getId());
+            assertThat(genres.get(i).getId()).isGreaterThan(genres.get(i - 1).getId());
         }
     }
 
@@ -39,10 +39,10 @@ class GenreDbStorageTest {
         // Получаем первый жанр из списка
         List<Genre> allGenres = genreStorage.getAll();
         assertThat(allGenres.size()).isGreaterThan(0);
-        
+
         Genre firstGenre = allGenres.get(0);
         Optional<Genre> foundGenre = genreStorage.getById(firstGenre.getId());
-        
+
         assertThat(foundGenre)
                 .isPresent()
                 .hasValueSatisfying(genre ->
@@ -53,7 +53,7 @@ class GenreDbStorageTest {
     @Test
     public void testGetGenreByIdNotFound() {
         Optional<Genre> genre = genreStorage.getById(999L);
-        
+
         assertThat(genre).isEmpty();
     }
 }
