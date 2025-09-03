@@ -92,9 +92,8 @@ public class FilmDbStorage implements FilmStorage {
             return film;
         });
 
-        for (Film film : films) {
-            film.setGenres(loadFilmGenres(film.getId()));
-        }
+        // Загружаем все жанры одним запросом
+        loadAllFilmGenres(films);
 
         return films;
     }
@@ -113,7 +112,8 @@ public class FilmDbStorage implements FilmStorage {
         }
 
         Film film = films.get(0);
-        film.setGenres(loadFilmGenres(film.getId()));
+        // Используем оптимизированную загрузку жанров
+        loadAllFilmGenres(List.of(film));
         return Optional.of(film);
     }
 
@@ -153,5 +153,56 @@ public class FilmDbStorage implements FilmStorage {
             return genre;
         }, filmId);
         return new HashSet<>(genres);
+    }
+
+    private void loadAllFilmGenres(List<Film> films) {
+        if (films.isEmpty()) {
+            return;
+        }
+
+        // Создаем список ID фильмов для IN запроса
+        String filmIds = films.stream()
+                .map(f -> String.valueOf(f.getId()))
+                .reduce((a, b) -> a + "," + b)
+                .orElse("");
+
+        if (filmIds.isEmpty()) {
+            return;
+        }
+
+        // Один запрос для получения всех жанров всех фильмов
+        String sql = "SELECT fg.film_id, g.id as genre_id, g.name as genre_name " +
+                "FROM film_genre fg " +
+                "JOIN genre g ON fg.genre_id = g.id " +
+                "WHERE fg.film_id IN (" + filmIds + ")";
+
+        List<FilmGenreMapping> mappings = jdbcTemplate.query(sql, (rs, rowNum) -> {
+            FilmGenreMapping mapping = new FilmGenreMapping();
+            mapping.filmId = rs.getLong("film_id");
+            mapping.genreId = rs.getLong("genre_id");
+            mapping.genreName = rs.getString("genre_name");
+            return mapping;
+        });
+
+        // Группируем жанры по фильмам
+        for (Film film : films) {
+            Set<Genre> filmGenres = new HashSet<>();
+            for (FilmGenreMapping mapping : mappings) {
+                if (mapping.filmId.equals(film.getId())) {
+                    Genre genre = new Genre();
+                    genre.setId(mapping.genreId);
+                    genre.setName(mapping.genreName);
+                    filmGenres.add(genre);
+                }
+            }
+            film.setGenres(filmGenres);
+        }
+    }
+
+    // Вспомогательный класс для маппинга
+    private static class FilmGenreMapping {
+        Long filmId;
+        Long genreId;
+        String genreName;
     }
 }

@@ -35,22 +35,8 @@ public class FilmService {
     }
 
     public Film addFilm(Film film) {
-        // Проверяем существование MPA
-        if (film.getMpa() != null && film.getMpa().getId() != null) {
-            mpaStorage.getById(film.getMpa().getId())
-                    .orElseThrow(() -> new NoSuchElementException("MPA с id " + film.getMpa().getId() + " не найден."));
-        }
-
-        // Проверяем существование жанров
-        if (film.getGenres() != null) {
-            for (var genre : film.getGenres()) {
-                if (genre.getId() != null) {
-                    genreStorage.getById(genre.getId())
-                            .orElseThrow(() -> new NoSuchElementException("Жанр с id " + genre.getId() + " не найден."));
-                }
-            }
-        }
-
+        checkMpaExists(film);
+        checkGenresExist(film);
         return filmStorage.add(film);
     }
 
@@ -92,5 +78,23 @@ public class FilmService {
     private void checkUserExists(Long userId) {
         userStorage.getById(userId)
                 .orElseThrow(() -> new NoSuchElementException("Пользователь с id " + userId + " не найден."));
+    }
+
+    private void checkMpaExists(Film film) {
+        if (film.getMpa() != null && film.getMpa().getId() != null) {
+            mpaStorage.getById(film.getMpa().getId())
+                    .orElseThrow(() -> new NoSuchElementException("MPA с id " + film.getMpa().getId() + " не найден."));
+        }
+    }
+
+    private void checkGenresExist(Film film) {
+        if (film.getGenres() != null) {
+            for (var genre : film.getGenres()) {
+                if (genre.getId() != null) {
+                    genreStorage.getById(genre.getId())
+                            .orElseThrow(() -> new NoSuchElementException("Жанр с id " + genre.getId() + " не найден."));
+                }
+            }
+        }
     }
 }
