@@ -13,7 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class Film {
-    private int id;
+    private Long id;
 
     @NotBlank(message = "Название не может быть пустым")
     private String name;
@@ -29,5 +29,26 @@ public class Film {
     private int duration;
 
     @Builder.Default
-    private Set<Integer> likes = new HashSet<>();
+    private Set<Long> likes = new HashSet<>();
+
+    private Mpa mpa;
+
+    @Builder.Default
+    private Set<Genre> genres = new HashSet<>();
+
+    public void addLike(Long userId) {
+        likes.add(userId);
+    }
+
+    public void removeLike(Long userId) {
+        likes.remove(userId);
+    }
+
+    public void addGenre(Genre genre) {
+        genres.add(genre);
+    }
+
+    public void removeGenre(Genre genre) {
+        genres.remove(genre);
+    }
 }

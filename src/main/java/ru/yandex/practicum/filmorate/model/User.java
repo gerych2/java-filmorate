@@ -12,7 +12,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class User {
-    private int id;
+    private Long id;
 
     @NotBlank(message = "Email не может быть пустым")
     @Email(message = "Email должен быть валидным")
@@ -29,11 +29,19 @@ public class User {
     private LocalDate birthday;
 
     @Builder.Default
-    private Set<Integer> friends = new HashSet<>();
+    private Set<Long> friends = new HashSet<>();
 
     public void fillNameIfEmpty() {
         if (name == null || name.isBlank()) {
             name = login;
         }
+    }
+
+    public void addFriend(Long friendId) {
+        friends.add(friendId);
+    }
+
+    public void removeFriend(Long friendId) {
+        friends.remove(friendId);
     }
 }

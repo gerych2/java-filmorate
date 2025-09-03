@@ -9,9 +9,9 @@ import java.util.NoSuchElementException;
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
 
-    private final Map<Integer, Film> films = new HashMap<>();
+    private final Map<Long, Film> films = new HashMap<>();
 
-    private int currentId = 1;
+    private long currentId = 1;
 
     @Override
     public Film add(Film film) {
@@ -35,7 +35,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Optional<Film> getById(int id) {
+    public Optional<Film> getById(Long id) {
         return Optional.ofNullable(films.get(id));
     }
 }
